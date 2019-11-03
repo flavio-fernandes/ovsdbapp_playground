@@ -52,9 +52,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
        centos.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
        centos.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
   end
-  config.vm.provider :libvirt do |v, override|
-    # TODO: This is needed to handle https://github.com/lavabit/robox/issues/94
-    v.disk_bus = "virtio"
-  end
 end
 
