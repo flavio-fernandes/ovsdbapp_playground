@@ -45,8 +45,7 @@ SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "centos-8" do |centos|
-       # TODO: Use centos/8 box when it becomes available
-       centos.vm.box = "generic/centos8"
+       centos.vm.box = "centos/8"
        # centos.vm.synced_folder ".", "/vagrant"
        centos.vm.synced_folder ".", "/vagrant", type: "rsync"
        centos.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
