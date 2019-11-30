@@ -19,6 +19,7 @@ add_phys_port() {
     sudo ovs-vsctl set Interface $name external_ids:iface-id=$iface_id
 }
 
+sudo ovs-vsctl --may-exist add-br br-int
 add_phys_port ns1 50:54:00:00:00:01 192.168.0.2 24 192.168.0.1 sw0-port1
 add_phys_port ns2 50:54:00:00:00:02 192.168.0.3 24 192.168.0.1 sw0-port2
 add_phys_port ns3 50:54:00:00:00:03 11.0.0.2 24 11.0.0.1 sw1-port1

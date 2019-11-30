@@ -28,15 +28,15 @@ done
 SCRIPT
 
 $bootstrap_python = <<SCRIPT
-ln -s /vagrant /home/vagrant ||:
+ln -s /vagrant/scripts ${HOME}/scripts ||:
 
 sudo dnf install -y python3 python3-pip
 sudo alternatives --set python $(which python3)
 sudo alternatives --set pip $(which pip3)
 
-cd /home/vagrant
+cd
 [ -e ./.env/bin/activate ] || {
-    echo '[ -e "/home/vagrant/.env/bin/activate" ] && source /home/vagrant/.env/bin/activate' >> .bashrc
+    echo '[ -e "${HOME}/.env/bin/activate" ] && source ${HOME}/.env/bin/activate' >> .bashrc
     python -m venv --copies .env && source ./.env/bin/activate
 }
 pip install --upgrade pip

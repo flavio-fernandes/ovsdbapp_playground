@@ -15,7 +15,7 @@ function wait_for_binding() {
     done
 }
 
-./step0_ovn_setup.py
+./step0_ovn_setup.sh
 ./step1_create_namespaces.sh
 ./step2_create_logical_ports.py
 

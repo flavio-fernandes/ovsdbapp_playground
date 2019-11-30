@@ -35,12 +35,12 @@ if [ ! -e /etc/yum.repos.d/delorean-deps.repo ] ; then
 fi
 sudo dnf install -y libibverbs
 sudo dnf install -y openvswitch openvswitch-ovn-central openvswitch-ovn-host
-for n in openvswitch ovn-northd ovn-controller ; do
-    sudo systemctl enable $n
-    sudo systemctl start $n
+for n in openvswitch ovn-controller ovn-northd ; do
+    #sudo systemctl enable $n
+    sudo systemctl start $n ||:
     #systemctl status $n
 done
-sudo ovs-vsctl set open . external-ids:ovn-remote=unix:/var/run/openvswitch/ovnsb_db.sock
+sudo ovs-vsctl set open . external-ids:ovn-remote=unix:/var/run/ovn/ovnsb_db.sock
 sudo ovs-vsctl set open . external-ids:ovn-encap-type=geneve
 sudo ovs-vsctl set open . external-ids:ovn-encap-ip=127.0.0.1
 
