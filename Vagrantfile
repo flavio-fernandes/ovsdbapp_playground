@@ -11,8 +11,7 @@ $bootstrap_ovn = <<SCRIPT
 # Add repo for where we can get OVS packages
 dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 if [ ! -e /etc/yum.repos.d/delorean-deps.repo ] ; then
-    # TODO: Use .../centos8/... when it becomes available
-    curl -L http://trunk.rdoproject.org/centos7/delorean-deps.repo | sudo tee /etc/yum.repos.d/delorean-deps.repo
+    curl -L http://trunk.rdoproject.org/centos8/delorean-deps.repo | sudo tee /etc/yum.repos.d/delorean-deps.repo
 fi
 
 dnf install -y libibverbs
