@@ -1,7 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">=1.7.0"
 
@@ -15,15 +14,20 @@ if [ ! -e /etc/yum.repos.d/delorean-deps.repo ] ; then
 fi
 
 dnf install -y libibverbs
-dnf install -y openvswitch openvswitch-ovn-central openvswitch-ovn-host
+dnf install -y openvswitch openvswitch-ovn-host
 
-for n in openvswitch ovn-northd ovn-controller ; do
-    systemctl enable $n
-    systemctl start $n
+for n in openvswitch ovn-controller ; do
+    systemctl enable --now $n
     systemctl status $n
 done
 
-##setenforce 0
+SCRIPT
+
+$bootstrap_ovn_central = <<SCRIPT
+
+dnf install -y openvswitch-ovn-central
+systemctl enable --now ovn-northd
+
 SCRIPT
 
 $bootstrap_python = <<SCRIPT
@@ -39,16 +43,52 @@ cd
     python -m venv --copies .env && source ./.env/bin/activate
 }
 pip install --upgrade pip
-pip install ovsdbapp
+#  pip install ovsdbapp
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.define "centos-8" do |centos|
-       centos.vm.box = "centos/8"
-       # centos.vm.synced_folder ".", "/vagrant"
-       centos.vm.synced_folder ".", "/vagrant", type: "rsync"
-       centos.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
-       centos.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
+  config.vm.box = "centos/8"
+  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+  config.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
+  config.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
+
+  config.vm.define "ovn0", primary: true, autostart: true do |ovn0|
+    ovn0.vm.hostname = "ovn0"
+    ovn0.vm.network "private_network", ip: "192.168.122.100",
+                    :mac => 'decaff000064'
+    ovn0.vm.provision "bootstrap_ovn_central", type: "shell", inline: $bootstrap_ovn_central
+    config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      vb.customize ["guestproperty", "set", :id,
+                    "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+    end
+  end
+  config.vm.define "ovn1", primary: false, autostart: true do |ovn1|
+    ovn1.vm.hostname = "ovn1"
+    ovn1.vm.network "private_network", ip: "192.168.122.101",
+                    :mac => 'decaff000065'
+    config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      vb.customize ["guestproperty", "set", :id,
+                    "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+    end
+  end
+  config.vm.define "ovn2", primary: false, autostart: true do |ovn2|
+    ovn2.vm.hostname = "ovn2"
+    ovn2.vm.network "private_network", ip: "192.168.122.102",
+                    :mac => 'decaff000066'
+    config.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      vb.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      vb.customize ["guestproperty", "set", :id,
+                    "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+    end
+  end
+  config.vm.provider 'libvirt' do |lb|
+      lb.nested = true
+      lb.suspend_mode = 'managedsave'
+      #lb.storage_pool_name = 'images'
   end
 end
-

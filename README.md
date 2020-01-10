@@ -1,15 +1,13 @@
-# ovsdbapp_playground
+# ovn_and_dhcp
 
-Config ovn using python ovsdbapp
+Vagrant for bringing up VMs used on Lars blog on OVN and DHCP
 
 Quickstart
 ```
 $ vagrant up
-$ vagrant ssh
-
-(.env) [vagrant@localhost ~]$ ./scripts/steps.sh
+$ vagrant ssh ovn0
 ```
 
 For more info on what the steps above do, see:
 
-[OVN via OVSDBApp](http://www.flaviof.com/blog2/post/main/ovsdbapp101/)
+[OVN and DHCP: a minimal example](https://blog.oddbit.com/post/2019-12-19-ovn-and-dhcp/)
