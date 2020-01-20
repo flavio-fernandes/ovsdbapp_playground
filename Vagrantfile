@@ -53,7 +53,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "centos/8"
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
   #config.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
-  config.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
+  #config.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
 
   config.vm.define "george", primary: false, autostart: true do |george|
     george.vm.hostname = "george"
