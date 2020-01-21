@@ -10,7 +10,7 @@ $bootstrap_ovn = <<SCRIPT
 # Add repo for where we can get OVS packages
 dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 if [ ! -e /etc/yum.repos.d/delorean-deps.repo ] ; then
-    curl -L http://trunk.rdoproject.org/centos8/delorean-deps.repo | sudo tee /etc/yum.repos.d/delorean-deps.repo
+    curl -L http://trunk.rdoproject.org/centos7/delorean-deps.repo | sudo tee /etc/yum.repos.d/delorean-deps.repo
 fi
 
 dnf install -y libibverbs
@@ -50,7 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   vm_memory = ENV['VM_MEMORY'] || '16000'
   vm_cpus = ENV['VM_CPUS'] || '8'
 
-  config.vm.box = "centos/8"
+  config.vm.box = "centos/7"
   config.vm.synced_folder ".", "/vagrant", type: "rsync"
   #config.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
   #config.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
