@@ -47,11 +47,15 @@ pip install --upgrade pip
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  vm_memory = ENV['VM_MEMORY'] || '16000'
-  vm_cpus = ENV['VM_CPUS'] || '8'
+  vm_memory = ENV['VM_MEMORY'] || '6000'
+  vm_cpus = ENV['VM_CPUS'] || '4'
 
   config.vm.box = "centos/7"
-  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+
+  # Mount /vagrant via sshfs
+  config.vm.synced_folder File.expand_path("."), "/vagrant", sshfs_opts_append: "-o nonempty", disabled: false, type: "sshfs"
+  # config.vm.synced_folder ".", "/vagrant", type: "rsync"
+
   #config.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
   #config.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false
 
