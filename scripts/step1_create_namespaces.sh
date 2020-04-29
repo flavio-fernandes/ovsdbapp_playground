@@ -12,6 +12,7 @@ add_phys_port() {
     sudo ip netns add $name
     sudo ovs-vsctl add-port br-int $name -- set interface $name type=internal
     sudo ip link set $name netns $name 
+    sudo ip netns exec $name ip link set lo up
     sudo ip netns exec $name ip link set $name address $mac
     sudo ip netns exec $name ip addr add $ip/$mask dev $name 
     sudo ip netns exec $name ip link set $name up

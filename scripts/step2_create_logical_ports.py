@@ -80,6 +80,11 @@ mimic_commands_acl = """
 #  - deny all incoming traffic not a part of an existing connection
 sudo ovn-nbctl --wait=hv acl-add sw0 from-lport 1001 'inport == "sw0-port1" && ip' allow-related
 sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1001 'outport == "sw0-port1" && ip' drop
+
+# Add rules to allow router to reach sw0-port1
+sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1002 'outport == "sw0-port1" && ip4.src == 192.168.0.1' allow
+sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1002 'outport == "sw0-port1" && ip4.src == 11.0.0.1' allow
+
 sudo ovn-nbctl acl-list sw0
 """
 with api.transaction(check_error=True) as txn:
@@ -89,6 +94,12 @@ with api.transaction(check_error=True) as txn:
     txn.add(api.acl_add("sw0", direction="to-lport", priority=1001,
                         match='outport == "sw0-port1" && ip',
                         action='drop'))
+    txn.add(api.acl_add("sw0", direction="to-lport", priority=1002,
+                        match='outport == "sw0-port1" && ip4.src == 192.168.0.1',
+                        action='allow'))
+    txn.add(api.acl_add("sw0", direction="to-lport", priority=1002,
+                        match='outport == "sw0-port1" && ip4.src == 11.0.0.1',
+                        action='allow'))
 
 # # Loop through rows returned from an API call
 # for ls_row in api.ls_list().execute(check_error=True):

@@ -18,12 +18,9 @@ dnf install -y libibverbs
 dnf install -y openvswitch openvswitch-ovn-central openvswitch-ovn-host
 
 for n in openvswitch ovn-northd ovn-controller ; do
-    systemctl enable $n
-    systemctl start $n
+    systemctl enable --now $n
     systemctl status $n
 done
-
-##setenforce 0
 SCRIPT
 
 $bootstrap_python = <<SCRIPT
@@ -44,8 +41,12 @@ SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "centos-8" do |centos|
+       centos.vm.hostname = "c8vm"
        centos.vm.box = "centos/8"
-       # centos.vm.synced_folder ".", "/vagrant"
+       # centos.vm.box = "centos/8_20200611"
+       # centos.vm.box_url = "https://cloud.centos.org/centos/8/vagrant/x86_64/images/CentOS-8-Vagrant-8.2.2004-20200611.2.x86_64.vagrant-virtualbox.box"
+       # centos.vm.box_url = "https://cloud.centos.org/centos/8/vagrant/x86_64/images/CentOS-8-Vagrant-8.2.2004-20200611.2.x86_64.vagrant-libvirt.box"
+       # centos.vm.synced_folder "#{ENV['PWD']}", "/vagrant", sshfs_opts_append: "-o nonempty", disabled: false, type: "sshfs"
        centos.vm.synced_folder ".", "/vagrant", type: "rsync"
        centos.vm.provision "bootstrap_ovn", type: "shell", inline: $bootstrap_ovn
        centos.vm.provision "bootstrap_python", type: "shell", inline: $bootstrap_python, privileged: false

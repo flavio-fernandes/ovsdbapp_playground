@@ -122,6 +122,9 @@ msg "Adding ACLs for sw0-port1 (192.168.0.2) "
 #  - deny all incoming traffic not a part of an existing connection
 sudo ovn-nbctl --wait=hv acl-add sw0 from-lport 1001 'inport == "sw0-port1" && ip' allow-related
 sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1001 'outport == "sw0-port1" && ip' drop
+# Add rules to allow router to reach sw0-port1
+sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1002 'outport == "sw0-port1" && ip4.src == 192.168.0.1' allow
+sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1002 'outport == "sw0-port1" && ip4.src == 11.0.0.1' allow
 sudo ovn-nbctl acl-list sw0
 
 msg "sw0-port1 (192.168.0.2) can ping sw0-port2 (192.168.0.3)"

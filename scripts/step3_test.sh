@@ -6,7 +6,7 @@ msg() {
 }
 
 call_ping() {
-     sudo ip netns exec $1 ping -c 1 -W 1 $2 > /dev/null
+     sudo ip netns exec $1 ping -c 1 -W 2 $2 > /dev/null
 }
 
 check_valid_ping() {
