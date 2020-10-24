@@ -24,7 +24,9 @@ done
 SCRIPT
 
 $bootstrap_python = <<SCRIPT
-ln -s /vagrant/scripts ${HOME}/scripts ||:
+# ln -s /vagrant/scripts ${HOME}/scripts ||:
+cp /vagrant/scripts/acl_meter.sh .
+chmod 755 ./acl_meter.sh
 
 sudo dnf install -y python3 python3-pip
 sudo alternatives --set python $(which python3)
