@@ -49,7 +49,12 @@ ACL_PRT3=$(sudo ovn-nbctl --bare --column _uuid,match find acl | grep -B1 '192.1
 
 sudo ovn-nbctl meter-add meter_me drop 1 pktps
 sudo ovn-nbctl set acl ${ACL_PRT2} log=true severity=alert meter=meter_me name=important_thing
-sudo ovn-nbctl set acl ${ACL_PRT3} log=true severity=info  meter=meter_me name=noisy_neighor
+sudo ovn-nbctl set acl ${ACL_PRT3} log=true severity=info  meter=meter_me name=noisy_neighbor
+
+# If you are using a build with changes
+# https://patchwork.ozlabs.org/project/ovn/patch/20201103221834.25541-2-flavio@flaviof.com/
+# This will make the meters work in a way that noisy_neighbor will not affect important_thing
+sudo ovn-nbctl set nb_global . options:acl_shared_log_meters="meter_me"
 
 # start noisy neighbor
 sudo nohup ip netns exec ns3 ping -q -i 0.1 192.168.0.11 & echo .
@@ -63,8 +68,8 @@ sleep 3
 echo 'look at:   sudo tail -F /var/log/ovn/ovn-controller.log | grep name'
 # sleep 20
 
-sudo grep -q noisy_neighor /var/log/ovn/ovn-controller.log || {
-    echo 'ERROR: did not locate noisy_neighor in logs for acl' >&2
+sudo grep -q noisy_neighbor /var/log/ovn/ovn-controller.log || {
+    echo 'ERROR: did not locate noisy_neighbor in logs for acl' >&2
     exit 1
 }
 
