@@ -47,14 +47,14 @@ sudo ovn-nbctl --wait=hv acl-add sw0 to-lport 1002 'outport == "sw0-port1" && ip
 ACL_PRT2=$(sudo ovn-nbctl --bare --column _uuid,match find acl | grep -B1 '192.168.0.12' | head -1)
 ACL_PRT3=$(sudo ovn-nbctl --bare --column _uuid,match find acl | grep -B1 '192.168.0.13' | head -1)
 
-sudo ovn-nbctl meter-add meter_me drop 1 pktps
+# If you are using a build with changes
+# https://patchwork.ozlabs.org/project/ovn/list/?series=214348
+# This will make the meters work in a way that noisy_neighbor will not affect important_thing
+sudo ovn-nbctl --fair meter-add meter_me drop 1 pktps ||:
+sudo ovn-nbctl meter-add meter_me drop 1 pktps ||:
+
 sudo ovn-nbctl set acl ${ACL_PRT2} log=true severity=alert meter=meter_me name=important_thing
 sudo ovn-nbctl set acl ${ACL_PRT3} log=true severity=info  meter=meter_me name=noisy_neighbor
-
-# If you are using a build with changes
-# https://patchwork.ozlabs.org/project/ovn/patch/20201103221834.25541-2-flavio@flaviof.com/
-# This will make the meters work in a way that noisy_neighbor will not affect important_thing
-sudo ovn-nbctl set nb_global . options:acl_shared_log_meters="meter_me"
 
 # start noisy neighbor
 sudo nohup ip netns exec ns3 ping -q -i 0.1 192.168.0.11 & echo .
